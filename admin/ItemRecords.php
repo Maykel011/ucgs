@@ -152,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UCGS Inventory | Item Records</title>
-    <link rel="stylesheet" href="../css/records.css">
+    <link rel="stylesheet" href="../css/record.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         /* Hide modals by default */
@@ -212,17 +212,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="main-content">
     <h2>Item Records</h2>
     <!-- Search and Filter Form -->
-<div class="search-form">
-    <input type="text" id="search-input" placeholder="Search...">
-    <p style = "font-family: 'Akrobat', sans-serif;">Date Range:</p>
-    <input type="date" id="start-date">
-    <p style = "font-family: 'Akrobat', sans-serif;">To</p>
-    <input type="date" id="end-date">
-    <button class="search-btn" onclick="searchTable()">Search</button>
-    <button class="reset-btn" onclick="resetSearch()">Reset</button>
-    <button class="create-btn" onclick="openCreateModal()">Create New Item</button>
-    <button class="delete-selected-btn" onclick="deleteSelected()">Delete Selected</button>
+    <div class="filter-container">
+    <div class="left-filters">
+        <div class="search-wrapper">
+            <i class="fas fa-search"></i>
+            <input type="text" id="search-box" placeholder="Search by Item Name..." autocomplete="off">
+        </div>
+        <div class="date-range">
+  <label for="start-date">Date Range:</label>
+  <input type="date" id="start-date">
+  <label for="end-date">To:</label>
+  <input type="date" id="end-date">
 </div>
+
+    </div>
+    <div class="right-buttons">
+ <button class="delete-selected-btn" onclick="deleteSelected()" disabled>Delete Selected</button>
+        <button class="create-btn" onclick="openCreateModal()">Create New Item</button>
+    </div>
+</div>
+
 
 
     <!-- Item Records Table -->
@@ -367,7 +376,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 <!-- Ensure modal is placed near the table for proper positioning -->
 
-    <script src="../js/records.js"></script>
+    <script src="../js/record.js"></script>
 
 </body>
 </html>

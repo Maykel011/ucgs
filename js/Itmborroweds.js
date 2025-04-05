@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // TABLE FUNCTIONALITY
     // ====================
     const rowsPerPage = 7;
-    let currentPage = 1;x
+    let currentPage = 1;
     const tableBody = document.querySelector(".item-table tbody");
     let rows = Array.from(tableBody.querySelectorAll("tr:not(.no-results)"));
     let filteredRows = [...rows];
@@ -214,14 +214,13 @@ document.addEventListener("DOMContentLoaded", function () {
                         if (index === 8) { // Status cell
                             td.className = "status-cell";
                             if (row.status === "Approved") {
-                                td.innerHTML = `Approved<br>${row.processed_at}`;
-                                td.style.color = "green";
-                                td.style.whiteSpace = "pre-line";
+                                td.innerHTML = `<span class="status-approved">Approved</span><span class="processed-time">${row.processed_at}</span>`;
                                 tr.setAttribute("data-status", "Approved");
                             } else if (row.status === "Rejected") {
-                                td.innerHTML = `Rejected<br>${row.processed_at}`;
-                                td.style.color = "red";
-                                td.style.whiteSpace = "pre-line";
+                                td.innerHTML = `<span class="status-rejected">Rejected</span><span class="processed-time">${row.processed_at}</span>`;
+                                if (row.rejection_reason) {
+                                    td.innerHTML += `<div class="rejection-reason">Reason: ${row.rejection_reason}</div>`;
+                                }
                                 tr.setAttribute("data-status", "Rejected");
                             } else {
                                 td.textContent = row.status;
@@ -242,10 +241,6 @@ document.addEventListener("DOMContentLoaded", function () {
                                 
                                 td.appendChild(approveBtn);
                                 td.appendChild(rejectBtn);
-                                
-                                // Add event listeners to new buttons
-                                approveBtn.addEventListener("click", handleApprove);
-                                rejectBtn.addEventListener("click", handleReject);
                             } else {
                                 const span = document.createElement("span");
                                 span.className = "processed-label";
@@ -273,38 +268,36 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ====================
-    // REQUEST HANDLING
+    // REQUEST HANDLING (using event delegation)
     // ====================
-    async function handleApprove() {
+    function handleApprove(event) {
         const requestId = this.getAttribute("data-request-id");
         
         if (confirm("Are you sure you want to approve this request?")) {
-            try {
-                const response = await fetch("ItemBorrowed.php", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded",
-                    },
-                    body: `action=approve&request_id=${requestId}`
-                });
-                
-                const data = await response.json();
-                
+            fetch("ItemBorrowed.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `action=approve&request_id=${requestId}`
+            })
+            .then(response => response.json())
+            .then(data => {
                 if (data.success) {
-                    // Refresh the table to get updated data from server
-                    await refreshTable();
+                    refreshTable();
                     showNotification("Request approved successfully", "success");
                 } else {
                     showNotification("Error approving request", "error");
                 }
-            } catch (error) {
+            })
+            .catch(error => {
                 console.error("Error:", error);
                 showNotification("An error occurred while approving the request", "error");
-            }
+            });
         }
     }
     
-    async function handleReject() {
+    function handleReject(event) {
         const requestId = this.getAttribute("data-request-id");
         currentRequestId = requestId;
         modal.style.display = "flex";
@@ -312,7 +305,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     
     // Update confirm rejection handler
-    confirmReject.addEventListener("click", async function() {
+    confirmReject.addEventListener("click", function() {
         const reason = rejectionReason.value.trim();
         
         if (!reason) {
@@ -320,34 +313,29 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         
-        try {
-            const response = await fetch("ItemBorrowed.php", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: `action=reject&request_id=${currentRequestId}&reason=${encodeURIComponent(reason)}`
-            });
-            
-            const data = await response.json();
-            
+        fetch("ItemBorrowed.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `action=reject&request_id=${currentRequestId}&reason=${encodeURIComponent(reason)}`
+        })
+        .then(response => response.json())
+        .then(data => {
             if (data.success) {
-                // Refresh the table to get updated data from server
-                await refreshTable();
-                
-                // Close modal and reset
+                refreshTable();
                 modal.style.display = "none";
                 rejectionReason.value = "";
                 errorMessage.textContent = "";
-                
                 showNotification("Request rejected successfully", "success");
             } else {
                 showNotification("Error rejecting request", "error");
             }
-        } catch (error) {
+        })
+        .catch(error => {
             console.error("Error:", error);
             showNotification("An error occurred while rejecting the request", "error");
-        }
+        });
     });
 
     // ====================
@@ -359,13 +347,13 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("prev-btn").addEventListener("click", prevPage);
     document.getElementById("next-btn").addEventListener("click", nextPage);
 
-    // Add event listeners to initial approve/reject buttons
-    document.querySelectorAll(".approve-btn").forEach(button => {
-        button.addEventListener("click", handleApprove);
-    });
-    
-    document.querySelectorAll(".reject-btn").forEach(button => {
-        button.addEventListener("click", handleReject);
+    // Use event delegation for approve/reject buttons
+    tableBody.addEventListener("click", function(event) {
+        if (event.target.classList.contains("approve-btn")) {
+            handleApprove.call(event.target, event);
+        } else if (event.target.classList.contains("reject-btn")) {
+            handleReject.call(event.target, event);
+        }
     });
 
     // ====================

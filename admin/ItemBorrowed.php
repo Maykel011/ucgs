@@ -119,7 +119,7 @@ $result = $conn->query($query);
 <aside class="sidebar">
     <ul>
         <li><a href="AdminDashboard.php"><img src="../assets/img/dashboards.png" alt="Dashboard Icon" class="sidebar-icon"> Dashboard</a></li>
-        <li><a href="#"><img src="../assets/img/list-items.png" alt="Items Icon" class="sidebar-icon"><span class="text">Item Records</span></a></li>
+        <li><a href="ItemRecords.php"><img src="../assets/img/list-items.png" alt="Items Icon" class="sidebar-icon"><span class="text">Item Records</span></a></li>
         <li class="dropdown">
             <a href="#" class="dropdown-btn">
                 <img src="../assets/img/request-for-proposal.png" alt="Request Icon" class="sidebar-icon">
@@ -231,6 +231,6 @@ $result = $conn->query($query);
     </div>
 </div>
 
-<script src="../js/Itmborrow.js"></script>
+<script src="../js/Itmborroweds.js"></script>
 </body>
 </html>

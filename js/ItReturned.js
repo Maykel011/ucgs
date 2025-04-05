@@ -198,55 +198,64 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-        // JavaScript functions for handling actions
-        function handleAction(button, action) {
-            const row = button.closest('tr');
-            const returnId = row.dataset.returnId;
-            
-            if (action === 'approve') {
-                if (confirm('Are you sure you want to approve this return?')) {
-                    processAction(returnId, 'approve');
-                }
-            } else if (action === 'reject') {
-                document.getElementById('rejectModal').style.display = 'block';
-                document.getElementById('confirmReject').onclick = function() {
-                    const reason = document.getElementById('rejectionReason').value;
-                    if (!reason) {
-                        document.getElementById('error-message').textContent = 'Please enter a reason';
-                        return;
-                    }
-                    processAction(returnId, 'reject', reason);
-                    document.getElementById('rejectModal').style.display = 'none';
-                };
+ // Improved handleAction function
+function handleAction(button, action) {
+    const row = button.closest('tr');
+    const returnId = row.dataset.returnId;
+    
+    if (action === 'approve') {
+        if (confirm('Are you sure you want to approve this return?')) {
+            processAction(returnId, 'approve');
+        }
+    } else if (action === 'reject') {
+        const modal = document.getElementById('rejectModal');
+        modal.style.display = 'block';
+        modal.dataset.returnId = returnId;
+        
+        document.getElementById('confirmReject').onclick = function() {
+            const reason = document.getElementById('rejectionReason').value;
+            if (!reason.trim()) {
+                document.getElementById('error-message').textContent = 'Please enter a reason';
+                return;
             }
-        }
+            processAction(returnId, 'reject', reason);
+            modal.style.display = 'none';
+            document.getElementById('rejectionReason').value = '';
+        };
+    }
+}
 
-        function processAction(returnId, action, notes = '') {
-            fetch(window.location.href, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: action,
-                    return_id: returnId,
-                    notes: notes
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message);
-                    location.reload();
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred');
-            });
+// Improved processAction function
+function processAction(returnId, action, notes = '') {
+    fetch(window.location.href, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({
+            action: action,
+            return_id: returnId,
+            notes: notes
+        })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload(); // Refresh to show updated status
+        } else {
+            throw new Error(data.message || 'Unknown error occurred');
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error: ' + error.message);
+    });
+}
 
         // Close modal
         document.querySelector('.close').onclick = function() {

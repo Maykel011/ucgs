@@ -70,22 +70,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die('Return date must be after the date needed.');
     }
 
-    // Fetch item details
-    $itemCheckStmt = $conn->prepare("SELECT item_name, quantity, item_category FROM items WHERE item_id = ? AND item_category = ? AND quantity > 0");
-    if (!$itemCheckStmt) {
-        die('Database error: ' . $conn->error);
-    }
-    $itemCheckStmt->bind_param("is", $itemId, $itemCategory);
-    $itemCheckStmt->execute();
-    $itemResult = $itemCheckStmt->get_result();
-    $itemData = $itemResult->fetch_assoc();
-    $itemCheckStmt->close();
+  // Fetch item details
+$itemCheckStmt = $conn->prepare("SELECT item_name, quantity FROM items WHERE item_id = ? AND item_category = ? AND quantity > 0");
+if (!$itemCheckStmt) {
+    die('Database error: ' . $conn->error);
+}
+$itemCheckStmt->bind_param("is", $itemId, $itemCategory);
+$itemCheckStmt->execute();
+$itemResult = $itemCheckStmt->get_result();
+$itemData = $itemResult->fetch_assoc();
+$itemCheckStmt->close();
 
-    if (!$itemData || $itemData['quantity'] < $quantity) {
-        die('Insufficient item quantity available or item does not exist in the selected category.');
-    }
+if (!$itemData || $itemData['quantity'] < $quantity) {
+    die('Insufficient item quantity available or item does not exist in the selected category.');
+}
 
-    $itemName = htmlspecialchars($itemData['item_name']);
+$itemName = htmlspecialchars($itemData['item_name']);
 
     // Check if the item already exists in the new_item_requests table
     $checkQuery = "SELECT COUNT(*) AS count FROM new_item_requests WHERE item_name = ? AND user_id = ? AND status = 'Pending'";
@@ -105,17 +105,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Insert borrow request
-    $stmt = $conn->prepare("INSERT INTO borrow_requests (user_id, item_id, quantity, date_needed, return_date, purpose, notes, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')");
+    $stmt = $conn->prepare("INSERT INTO borrow_requests (user_id, item_id, item_name, quantity, date_needed, return_date, purpose, notes, status)  VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Pending')");
+
     if (!$stmt) {
         die('Database error: ' . $conn->error);
     }
-    $stmt->bind_param("iiissss", $userId, $itemId, $quantity, $dateNeeded, $returnDate, $purpose, $notes);
+    $stmt->bind_param("iisissss", $userId, $itemId, $itemName, $quantity, $dateNeeded, $returnDate, $purpose, $notes);
+
     $success = $stmt->execute();
 
     if ($success) {
         
         // Save transaction history
-        $transactionQuery = "INSERT INTO transactions (user_id, action, details, item_id, quantity, status, item_name) VALUES (?, 'Borrow', ?, ?, ?, 'Pending', ?)";
+        $transactionQuery = "INSERT INTO transactions (user_id, action, details, item_id, item_name, quantity, status) VALUES (?, 'Borrow', ?, ?, ?, 'Pending', ?)";
         $transactionStmt = $conn->prepare($transactionQuery);
         if (!$transactionStmt) {
             die('Database error: ' . $conn->error);

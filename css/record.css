@@ -662,3 +662,107 @@ body {
     background: linear-gradient(135deg, #0056b3, #003d82);
 }
 
+.filter-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+.left-filters {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.right-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Keep your existing search wrapper styles */
+.search-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.search-wrapper i.fas.fa-search {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #777;
+    font-size: 14px;
+    pointer-events: none;
+}
+
+#search-box {
+    padding-left: 30px;
+    height: 35px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 200px;
+}
+
+/* Button styles */
+.create-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: 'Akrobat', sans-serif;
+}
+
+.delete-selected-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: 'Akrobat', sans-serif;
+}
+
+.delete-selected-btn {
+    /* Your existing styles */
+    transition: opacity 0.3s ease;
+}
+
+.delete-selected-btn:disabled {
+    background-color: #a0a0a0;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.create-btn:hover, .delete-selected-btn:hover {
+    opacity: 0.9;
+}
+
+/* Style the labels and inputs side-by-side with spacing */
+label {
+    margin-right: 8px;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  input[type="date"] {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-right: 16px;
+    font-size: 14px;
+  }
+  
+  /* Add responsive spacing if needed */
+  @media (max-width: 600px) {
+    label,
+    input[type="date"] {
+      display: block;
+      margin-bottom: 10px;
+    }
+  }
+  

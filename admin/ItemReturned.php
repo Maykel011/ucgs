@@ -8,7 +8,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Administrator') {
     exit();
 }
 
-// Fetch the logged-in admin's details
+// Fetch admin details
 $currentAdminId = intval($_SESSION['user_id']);
 $stmt = $conn->prepare("SELECT username, email, role FROM users WHERE user_id = ?");
 $stmt->bind_param("i", $currentAdminId);
@@ -17,29 +17,14 @@ $result = $stmt->get_result();
 $currentAdmin = $result->fetch_assoc();
 $stmt->close();
 
-// Pass admin details to the frontend
 $accountName = htmlspecialchars($currentAdmin['username'] ?? 'User');
 $accountEmail = htmlspecialchars($currentAdmin['email'] ?? '');
 $accountRole = htmlspecialchars($currentAdmin['role'] ?? '');
 
-// Fetch returned items from item_returns table
-$query = "SELECT ir.return_id, ir.return_date, i.item_name, ir.quantity, 
-                 ir.item_condition, ir.notes, ir.created_at, u.username
-          FROM item_returns ir
-          JOIN items i ON ir.item_id = i.item_id
-          JOIN users u ON ir.user_id = u.user_id
-          ORDER BY ir.created_at DESC";
-
-$result = $conn->query($query);
-
-if (!$result) {
-    die("Error fetching returned items: " . htmlspecialchars($conn->error));
-}
-
-// Handle return approval/rejection
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Handle AJAX requests
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
     $input = json_decode(file_get_contents('php://input'), true);
-
+    
     if (!isset($input['action']) || !isset($input['return_id'])) {
         echo json_encode(['success' => false, 'message' => 'Invalid request']);
         exit();
@@ -49,27 +34,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $input['action'];
     $notes = isset($input['notes']) ? $conn->real_escape_string($input['notes']) : '';
 
-    if ($action === 'approve') {
-        // For approval, just update notes if needed
-        $stmt = $conn->prepare("UPDATE item_returns SET notes = ? WHERE return_id = ?");
+    try {
+        $conn->begin_transaction();
+        
+        if ($action === 'approve') {
+            // Update inventory quantity if approved
+            $stmt = $conn->prepare("UPDATE items i 
+                                  JOIN item_returns ir ON i.item_id = ir.item_id
+                                  SET i.quantity = i.quantity + ir.quantity 
+                                  WHERE ir.return_id = ?");
+            $stmt->bind_param("i", $returnId);
+            $stmt->execute();
+            $stmt->close();
+            
+            // Mark as approved
+            $stmt = $conn->prepare("UPDATE item_returns SET status = 'Approved', notes = ? WHERE return_id = ?");
+        } elseif ($action === 'reject') {
+            // For rejection, update condition and status
+            $stmt = $conn->prepare("UPDATE item_returns SET status = 'Rejected', item_condition = 'Damaged', notes = ? WHERE return_id = ?");
+        } else {
+            throw new Exception("Invalid action");
+        }
+        
         $stmt->bind_param("si", $notes, $returnId);
-    } elseif ($action === 'reject') {
-        // For rejection, update condition and notes
-        $stmt = $conn->prepare("UPDATE item_returns SET item_condition = 'Damaged', notes = ? WHERE return_id = ?");
-        $stmt->bind_param("si", $notes, $returnId);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Invalid action']);
-        exit();
-    }
-
-    if ($stmt->execute()) {
+        $stmt->execute();
+        $stmt->close();
+        
+        $conn->commit();
         echo json_encode(['success' => true, 'message' => 'Action completed successfully']);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Failed to process request']);
+    } catch (Exception $e) {
+        $conn->rollback();
+        echo json_encode(['success' => false, 'message' => 'Failed to process request: ' . $e->getMessage()]);
     }
-
-    $stmt->close();
     exit();
+}
+
+// Fetch returned items with status
+$query = "SELECT ir.return_id, ir.return_date, i.item_name, ir.quantity, 
+                 ir.item_condition, ir.notes, ir.created_at, u.username, ir.status
+          FROM item_returns ir
+          JOIN items i ON ir.item_id = i.item_id
+          JOIN users u ON ir.user_id = u.user_id
+          ORDER BY ir.created_at DESC";
+
+$result = $conn->query($query);
+if (!$result) {
+    die("Error fetching returned items: " . htmlspecialchars($conn->error));
 }
 ?>
 
