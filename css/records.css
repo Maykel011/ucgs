@@ -1,0 +1,664 @@
+@font-face {
+    font-family: 'Akrobat';
+    src: url('Akrobat.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    /*font-family: 'Akrobat', sans-serif;*/
+}
+
+@font-face {
+    font-family: 'SerpentineBold';
+    src: url('Serpentinebold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+    /* font-family: 'SerpentineBold', sans-serif; */
+}
+body {
+    margin: 0;
+    font-family: 'Akrobat', sans-serif;
+}
+
+
+/* HEADER */
+.header {
+    background-color: #f4f4f4;
+    height: 100px;
+    padding: 0 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
+
+/* MAIN CONTENT */
+.main-content {
+    margin-left: 250px;
+    margin-top: 120px;
+    padding: 20px;
+}
+
+
+.left-side {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 50px;
+    margin-right: 15px;
+    
+}
+
+.website-name {
+    font-family: 'Akrobat', sans-serif;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+}
+
+.right-side {
+    margin-right: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.icon {
+    height: 30px;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
+.icon:hover {
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 250px;
+    height: calc(100vh - 100px);
+    background: linear-gradient(45deg, #006400, #003300);
+    position: fixed;
+    top: 100px;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    padding-top: 10px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar ul {
+    font-family: 'Akrobat', sans-serif;
+    list-style: none;
+    padding: 0px;
+    margin: 0;
+}
+
+.sidebar li {
+    margin: 5px 0;
+}
+
+/* Sidebar Links */
+.sidebar a, .dropdown-btn {
+    font-family: 'Akrobat', sans-serif;
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    font-size: 1.2em;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+}
+
+/* Align icons and text */
+.sidebar a .text, .dropdown-btn .text {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.sidebar-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* Hover Effect with Zoom */
+.sidebar a:hover, .dropdown-btn:hover {
+    background-color: #005500;
+    border-radius: 5px;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Smooth Zoom for Sidebar Icons */
+.sidebar a:hover .sidebar-icon, .dropdown-btn:hover .sidebar-icon {
+    transform: scale(1.2);
+}
+
+/* DROPDOWN MENU */
+.dropdown-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+/* Dropdown Arrow Icon */
+.arrow-icon {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+/* Fade-in and Fade-out Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+
+/* Dropdown Content */
+.dropdown-content {
+    display: none;
+    background-color: #005500;
+    padding: 5px;
+    border-radius: 5px;
+    margin-left: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* When active, show dropdown with fade-in */
+.dropdown.active .dropdown-content {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+    opacity: 1;
+}
+
+/* Fade-out effect when hiding dropdown */
+.dropdown-content.hidden {
+    animation: fadeOut 0.3s ease-in-out;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Dropdown Links */
+.dropdown-content a {
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    font-size: 14px;
+    gap: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease-in-out;
+}
+
+/* Dropdown Icon Zoom */
+.dropdown-content a:hover i {
+    transform: scale(1.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.dropdown-content a:hover {
+    background-color: #880000;
+    border-radius: 3px;
+    transform: scale(1.05);
+}
+
+/* Open Dropdown */
+.dropdown.active .dropdown-content {
+    display: block;
+}
+
+/* Rotate arrow when active */
+.dropdown.active .arrow-icon {
+    transform: rotate(180deg);
+}
+
+/* Spacing between dropdown and next item */
+.dropdown-content {
+    margin-top: 5px;
+}
+
+/* Fix request record positioning */
+.request-record {
+    transition: margin-top 0.3s ease;
+    margin-top: 0px;
+}
+
+/* USER DROPDOWN */
+.user {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+}
+
+/* User Icon */
+.user .icon {
+    width: 30px;
+    height: 30px;
+}
+
+/* Admin Text */
+.admin-text {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Dropdown Menu */
+.user {
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between icon and text */
+}
+
+/* User Icon */
+.user .icon {
+    width: 30px;
+    height: 30px;
+}
+
+/* Admin Text */
+.admin-text {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Dropdown Menu */
+.user-dropdown {
+    position: absolute;
+    top: 45px; /* Adjusted to align under the user icon */
+    right: 0;
+    background: #fff;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    overflow: hidden;
+    width: 180px;
+    display: none;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Dropdown Items */
+.user-dropdown a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Icons inside dropdown */
+.user-dropdown a img {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* Hover Effect */
+.user-dropdown a:hover {
+    background: #005500;
+    color: white;
+}
+
+/* Zoom-in effect for icons on hover */
+.user-dropdown a:hover img {
+    transform: scale(1.1);
+}
+
+/* Show dropdown */
+.user-dropdown.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Divider between items */
+.user-dropdown a:not(:last-child) {
+    border-bottom: 1px solid #eee;
+}
+
+
+.main-content h2 {
+    font-family: 'Akrobat', sans-serif;
+}
+/* Search Form */
+.search-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    justify-content: flex-start; /* Align items to the left */
+}
+
+.search-form input, .search-form button {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.search-form input {
+    width: 250px; /* Adjusted width for better visibility */
+    padding: 10px; /* Increased padding for better spacing */
+    font-size: 14px; /* Adjusted font size for readability */
+}
+
+.search-form button {
+    padding: 10px 15px; /* Adjusted padding for consistency */
+    font-size: 14px; /* Adjusted font size for readability */
+}
+
+.search-btn, .reset-btn {
+    background-color: #006400;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 8px 12px;
+}
+
+.reset-btn {
+    background-color: #dc3545;
+}
+
+.search-btn:hover, .reset-btn:hover {
+    opacity: 0.8;
+}
+
+/* Table Styling */
+/* Table Styling */
+.item-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px; /* Smaller text */
+}
+
+.item-table th, .item-table td {
+    padding: 6px; /* Less padding */
+    border: 1px solid #ddd;
+    text-align: center;
+    white-space: nowrap; /* Prevent text wrapping */
+}
+
+.item-table th {
+    background-color: #005500;
+    color: white;
+    font-size: 13px; /* Smaller header text */
+}
+
+/* Buttons */
+.update-btn, .delete-btn {
+    font-size: 12px; /* Smaller button text */
+    padding: 4px 8px; /* Less padding */
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+    .item-table {
+        font-size: 12px;
+    }
+
+    .item-table th, .item-table td {
+        padding: 4px;
+    }
+}
+
+.update-btn, .delete-btn {
+    font-size: 12px; /* Slightly larger for readability */
+    padding: 5px 10px; /* Balanced padding */
+    border-radius: 4px; /* Slightly rounded corners for a modern look */
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out; /* Smooth transitions */
+}
+
+/* Update button */
+.update-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.update-btn:hover {
+    background-color: #45a049; /* Slightly darker on hover */
+    transform: scale(1.05); /* Subtle hover effect */
+}
+
+/* Delete button */
+.delete-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #d32f2f; /* Slightly darker on hover */
+    transform: scale(1.05); /* Subtle hover effect */
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .update-btn, .delete-btn {
+        font-size: 10px;
+        padding: 4px 8px;
+    }
+}
+
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 15px;
+    gap: 10px;
+}
+
+.pagination button {
+    padding: 8px 12px;
+    border: none;
+    background-color: #006400;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.pagination button:disabled {
+    background-color: gray;
+    cursor: not-allowed;
+}
+
+.create-btn{
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Style for delete modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    inset: 0; /* Shortcut for top, right, bottom, left */
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease-in-out;
+    padding: 20px;
+}
+
+/* Modal Content */
+.modal-content {
+    background: linear-gradient(135deg, #ffffff, #f0f0f0);
+    padding: 25px;
+    width: 40%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30%; /* Reduce width */
+    max-width: 400px; /* Adjust max width */
+}
+
+/* Compressed Modal Form */
+.modal form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Reduce spacing between elements */
+}
+
+.modal form label {
+    font-size: 12px; /* Smaller font size */
+    margin-top: 5px; /* Reduce top margin */
+}
+
+.modal form input, 
+.modal form select, 
+.modal form textarea {
+    padding: 6px; /* Reduce padding */
+    font-size: 12px; /* Smaller font size */
+    border-radius: 4px; /* Slightly smaller border radius */
+}
+
+.modal form button {
+    padding: 8px 12px; /* Reduce button padding */
+    font-size: 14px; /* Slightly smaller font size */
+}
+
+#create-Item-modal .modal-content,
+#updateModal .modal-content {
+  -ms-overflow-style: none;
+  scrollbar-width: none; 
+}
+
+#create-Item-modal .modal-content::-webkit-scrollbar,
+#updateModal .modal-content::-webkit-scrollbar {
+  display: none; 
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Close Button */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+}
+
+.close-btn:hover {
+    color: red;
+}
+
+
+.modal h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.modal form {
+    display: flex;
+    flex-direction: column;
+}
+
+.modal form label {
+    font-weight: 600;
+    color: #444;
+    margin-top: 10px;
+}
+
+.modal form input, 
+.modal form select {
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+}
+
+.modal form input:focus,
+.modal form select:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.modal form button {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: background 0.3s ease-in-out;
+    font-family: 'akrobat', sans-serif;
+}
+
+.modal form button:hover {
+    background: linear-gradient(135deg, #0056b3, #003d82);
+}
+
