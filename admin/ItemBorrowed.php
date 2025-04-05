@@ -34,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         exit();
     }
     elseif ($_POST['action'] === 'refresh') {
-        // First try with all columns
         $query = "SELECT br.borrow_id AS request_id, u.username, i.item_name, i.item_category,
                  br.date_needed, br.return_date, br.quantity, br.purpose, br.notes, 
                  br.status, br.request_date, br.processed_at, br.rejection_reason
@@ -42,22 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
           JOIN users u ON br.user_id = u.user_id
           JOIN items i ON br.item_id = i.item_id
           ORDER BY br.request_date DESC";
-        
         $result = $conn->query($query);
-        
-        if (!$result) {
-            // If the query fails, try without processed_at and rejection_reason
-            $query = "SELECT br.borrow_id AS request_id, u.username, i.item_name, i.item_category,
-                     br.date_needed, br.return_date, br.quantity, br.purpose, br.notes, 
-                     br.status, br.request_date, 
-                     NULL AS processed_at,
-                     NULL AS rejection_reason
-              FROM borrow_requests br 
-              JOIN users u ON br.user_id = u.user_id
-              JOIN items i ON br.item_id = i.item_id
-              ORDER BY br.request_date DESC";
-            $result = $conn->query($query);
-        }
         
         $rows = [];
         while ($row = $result->fetch_assoc()) {
@@ -90,32 +74,15 @@ if (empty($accountName)) {
 $accountName = htmlspecialchars($accountName);
 $accountRole = 'Administrator';
 
-// Fetch initial data with fallback for missing columns
+// Fetch initial data
 $query = "SELECT br.borrow_id AS request_id, u.username, i.item_name, i.item_category,
                  br.date_needed, br.return_date, br.quantity, br.purpose, br.notes, 
-                 br.status, br.request_date, 
-                 IFNULL(br.processed_at, NULL) AS processed_at,
-                 IFNULL(br.rejection_reason, '') AS rejection_reason
+                 br.status, br.request_date, br.processed_at, br.rejection_reason
           FROM borrow_requests br 
           JOIN users u ON br.user_id = u.user_id
           JOIN items i ON br.item_id = i.item_id
           ORDER BY br.request_date DESC";
-
 $result = $conn->query($query);
-
-if (!$result) {
-    // Fallback query if the first one fails
-    $query = "SELECT br.borrow_id AS request_id, u.username, i.item_name, i.item_category,
-                     br.date_needed, br.return_date, br.quantity, br.purpose, br.notes, 
-                     br.status, br.request_date, 
-                     NULL AS processed_at,
-                     '' AS rejection_reason
-              FROM borrow_requests br 
-              JOIN users u ON br.user_id = u.user_id
-              JOIN items i ON br.item_id = i.item_id
-              ORDER BY br.request_date DESC";
-    $result = $conn->query($query);
-}
 ?>
 
 <!DOCTYPE html>
@@ -124,30 +91,8 @@ if (!$result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UCGS Inventory | Item Borrowed</title>
-    <link rel="stylesheet" href="../css/ItemBorrowed.css">
+    <link rel="stylesheet" href="../css/ItemBorrowedss.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px;
-            border-radius: 5px;
-            color: white;
-            z-index: 1000;
-            opacity: 1;
-            transition: opacity 0.5s ease;
-        }
-        .notification.success {
-            background-color: #4CAF50;
-        }
-        .notification.error {
-            background-color: #f44336;
-        }
-        .notification.fade-out {
-            opacity: 0;
-        }
-    </style>
 </head>
 
 <body>
@@ -196,12 +141,15 @@ if (!$result) {
     <h2>Item Borrowed</h2>
     
     <div class="filter-container">
+    <div class="search-wrapper">
+        <i class="fas fa-search"></i>
         <input type="text" id="search-box" placeholder="Search...">
-        <label for="start-date">Date Range:</label>
-        <input type="date" id="start-date">
-        <label for="end-date">To:</label>
-        <input type="date" id="end-date">
     </div>
+    <label for="start-date">Date Range:</label>
+    <input type="date" id="start-date">
+    <label for="end-date">To:</label>
+    <input type="date" id="end-date">
+</div>
 
     <table class="item-table">
         <thead>
@@ -231,17 +179,19 @@ if (!$result) {
         <td><?php echo htmlspecialchars($row['quantity']); ?></td>
         <td><?php echo htmlspecialchars($row['purpose']); ?></td>
         <td><?php echo htmlspecialchars($row['notes']); ?></td>
-        <td class="status-cell">
-            <?php 
-            if ($row['status'] === 'Approved') {
-                echo "Approved<br>" . htmlspecialchars($row['processed_at']);
-            } elseif ($row['status'] === 'Rejected') {
-                echo "Rejected<br>" . htmlspecialchars($row['processed_at']);
-            } else {
-                echo htmlspecialchars($row['status']);
-            }
-            ?>
-        </td>
+        <td class="status-cell <?php echo strtolower($row['status']); ?>">
+    <?php 
+    if ($row['status'] === 'Approved') {
+        echo '<span class="status-approved">Approved</span>';
+        echo '<span class="processed-time">' . htmlspecialchars($row['processed_at']) . '</span>';
+    } elseif ($row['status'] === 'Rejected') {
+        echo '<span class="status-rejected">Rejected</span>';
+        echo '<span class="processed-time">' . htmlspecialchars($row['processed_at']) . '</span>';
+    } else {
+        echo htmlspecialchars($row['status']);
+    }
+    ?>
+</td>
         <td><?php echo htmlspecialchars($row['request_date']); ?></td>
         <td class="action-cell">
             <?php if ($row['status'] === 'Pending'): ?>

@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // TABLE FUNCTIONALITY
     // ====================
     const rowsPerPage = 7;
-    let currentPage = 1;
+    let currentPage = 1;x
     const tableBody = document.querySelector(".item-table tbody");
     let rows = Array.from(tableBody.querySelectorAll("tr:not(.no-results)"));
     let filteredRows = [...rows];
@@ -188,14 +188,13 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await response.json();
             
             if (data.rows && data.rows.length > 0) {
-                const tableBody = document.getElementById('item-table-body');
-                tableBody.innerHTML = '';
+                tableBody.innerHTML = "";
                 
                 data.rows.forEach(row => {
-                    const tr = document.createElement('tr');
-                    tr.setAttribute('data-request-id', row.request_id);
+                    const tr = document.createElement("tr");
+                    tr.setAttribute("data-request-id", row.request_id);
                     
-                    // Create cells
+                    // Create all table cells
                     const cells = [
                         row.username,
                         row.item_name,
@@ -205,54 +204,52 @@ document.addEventListener("DOMContentLoaded", function () {
                         row.quantity,
                         row.purpose,
                         row.notes,
-                        '', // Status cell
+                        "", // Status cell will be handled separately
                         row.request_date,
-                        ''  // Action cell
+                        ""  // Action cell will be handled separately
                     ];
                     
                     cells.forEach((cellContent, index) => {
-                        const td = document.createElement('td');
+                        const td = document.createElement("td");
                         if (index === 8) { // Status cell
-                            td.className = 'status-cell';
-                            if (row.status === 'Approved') {
-                                const processedTime = row.processed_at || row.request_date;
-                                td.innerHTML = `Approved<br>${processedTime}`;
-                                td.style.color = 'green';
-                                td.style.whiteSpace = 'pre-line';
-                                tr.setAttribute('data-status', 'Approved');
-                            } else if (row.status === 'Rejected') {
-                                const processedTime = row.processed_at || row.request_date;
-                                td.innerHTML = `Rejected<br>${processedTime}`;
-                                td.style.color = 'red';
-                                td.style.whiteSpace = 'pre-line';
-                                tr.setAttribute('data-status', 'Rejected');
+                            td.className = "status-cell";
+                            if (row.status === "Approved") {
+                                td.innerHTML = `Approved<br>${row.processed_at}`;
+                                td.style.color = "green";
+                                td.style.whiteSpace = "pre-line";
+                                tr.setAttribute("data-status", "Approved");
+                            } else if (row.status === "Rejected") {
+                                td.innerHTML = `Rejected<br>${row.processed_at}`;
+                                td.style.color = "red";
+                                td.style.whiteSpace = "pre-line";
+                                tr.setAttribute("data-status", "Rejected");
                             } else {
                                 td.textContent = row.status;
-                                tr.setAttribute('data-status', row.status);
+                                tr.setAttribute("data-status", row.status);
                             }
                         } else if (index === 10) { // Action cell
-                            td.className = 'action-cell';
-                            if (row.status === 'Pending') {
-                                const approveBtn = document.createElement('button');
-                                approveBtn.className = 'approve-btn';
-                                approveBtn.setAttribute('data-request-id', row.request_id);
-                                approveBtn.textContent = 'Approve';
+                            td.className = "action-cell";
+                            if (row.status === "Pending") {
+                                const approveBtn = document.createElement("button");
+                                approveBtn.className = "approve-btn";
+                                approveBtn.setAttribute("data-request-id", row.request_id);
+                                approveBtn.textContent = "Approve";
                                 
-                                const rejectBtn = document.createElement('button');
-                                rejectBtn.className = 'reject-btn';
-                                rejectBtn.setAttribute('data-request-id', row.request_id);
-                                rejectBtn.textContent = 'Reject';
+                                const rejectBtn = document.createElement("button");
+                                rejectBtn.className = "reject-btn";
+                                rejectBtn.setAttribute("data-request-id", row.request_id);
+                                rejectBtn.textContent = "Reject";
                                 
                                 td.appendChild(approveBtn);
                                 td.appendChild(rejectBtn);
                                 
-                                // Add event listeners
-                                approveBtn.addEventListener('click', handleApprove);
-                                rejectBtn.addEventListener('click', handleReject);
+                                // Add event listeners to new buttons
+                                approveBtn.addEventListener("click", handleApprove);
+                                rejectBtn.addEventListener("click", handleReject);
                             } else {
-                                const span = document.createElement('span');
-                                span.className = 'processed-label';
-                                span.textContent = 'Processed';
+                                const span = document.createElement("span");
+                                span.className = "processed-label";
+                                span.textContent = "Processed";
                                 td.appendChild(span);
                             }
                         } else {
@@ -294,6 +291,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const data = await response.json();
                 
                 if (data.success) {
+                    // Refresh the table to get updated data from server
                     await refreshTable();
                     showNotification("Request approved successfully", "success");
                 } else {
@@ -334,10 +332,14 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await response.json();
             
             if (data.success) {
+                // Refresh the table to get updated data from server
                 await refreshTable();
+                
+                // Close modal and reset
                 modal.style.display = "none";
                 rejectionReason.value = "";
                 errorMessage.textContent = "";
+                
                 showNotification("Request rejected successfully", "success");
             } else {
                 showNotification("Error rejecting request", "error");

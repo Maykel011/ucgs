@@ -340,12 +340,27 @@ body {
 .filter-container {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
+    gap: 15px;
+    margin-bottom: 20px;
     background: #f9f9f9;
     padding: 10px;
     border-radius: 8px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.search-wrapper i.fas.fa-search {
+    position: absolute;
+    right: 10px; /* Changed from left to right */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #777;
+    font-size: 14px;
+    pointer-events: none; /* Prevents the icon from blocking clicks */
 }
 
 .filter-container input[type="text"],
@@ -357,6 +372,7 @@ body {
 
 /* Table Styling */
 .item-table {
+    table-layout: flex; /* This prevents column width shifting */
     width: 100%; /* Reduce table width */
     background-color: #fff;
     border-collapse: collapse;
@@ -365,6 +381,8 @@ body {
     border-radius: 8px;
     overflow: hidden;
 }
+
+
 
 /* Table Header */
 .item-table thead th {
@@ -566,28 +584,38 @@ input[type="date"] {
     background: darkgray;
 }
 
-
-.status-approved {
-    color: green;
-    font-weight: bold;
-}
-
-.status-rejected {
-    color: red;
-    font-weight: bold;
-}
-
-.status-cell.approved-status {
+.status-cell {
     white-space: normal;
     line-height: 1.4;
 }
 
-.status-cell.approved-status small {
-    font-size: 0.85em;
-    color: #666;
+.status-cell .status-approved {
+    color: green;
+    font-weight: bold;
 }
 
-.processed-label {
-    color: #666;
-    font-style: italic;
+.status-cell .status-rejected {
+    color: red;
+    font-weight: bold;
 }
+
+.status-cell .processed-time {
+    font-size: 0.85em;
+    color: #666;
+    display: block;
+    margin-top: 2px;
+}
+
+/* Alternative approach if you prefer class-based styling on the td */
+.status-cell.approved {
+    color: green;
+    font-weight: bold;
+}
+
+.status-cell.rejected {
+    color: red;
+    font-weight: bold;
+}
+
+
+

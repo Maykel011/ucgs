@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 04, 2025 at 02:52 PM
+-- Generation Time: Apr 05, 2025 at 06:11 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -86,16 +86,18 @@ CREATE TABLE `borrow_requests` (
   `status` enum('Pending','Approved','Rejected') NOT NULL DEFAULT 'Pending',
   `request_date` datetime NOT NULL DEFAULT current_timestamp(),
   `transaction_id` int(11) DEFAULT NULL,
-  `item_name` varchar(255) DEFAULT NULL
+  `item_name` varchar(255) DEFAULT NULL,
+  `processed_at` datetime DEFAULT NULL,
+  `rejection_reason` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `borrow_requests`
 --
 
-INSERT INTO `borrow_requests` (`borrow_id`, `user_id`, `item_id`, `quantity`, `date_needed`, `return_date`, `purpose`, `notes`, `status`, `request_date`, `transaction_id`, `item_name`) VALUES
-(1, 2, 2, 1, '2025-03-30', '2025-03-31', 'asdas', 'asda', 'Pending', '2025-03-31 13:26:23', NULL, NULL),
-(2, 5, 3, 4, '2025-04-05', '2025-04-06', 'ads', '', 'Pending', '2025-04-04 11:12:46', NULL, NULL);
+INSERT INTO `borrow_requests` (`borrow_id`, `user_id`, `item_id`, `quantity`, `date_needed`, `return_date`, `purpose`, `notes`, `status`, `request_date`, `transaction_id`, `item_name`, `processed_at`, `rejection_reason`) VALUES
+(1, 2, 2, 1, '2025-03-30', '2025-03-31', 'asdas', 'asda', 'Pending', '2025-03-31 13:26:23', NULL, NULL, NULL, NULL),
+(2, 5, 3, 4, '2025-04-05', '2025-04-06', 'ads', '', 'Pending', '2025-04-04 11:12:46', NULL, NULL, NULL, NULL);
 
 --
 -- Triggers `borrow_requests`
