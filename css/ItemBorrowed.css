@@ -576,3 +576,18 @@ input[type="date"] {
     color: red;
     font-weight: bold;
 }
+
+.status-cell.approved-status {
+    white-space: normal;
+    line-height: 1.4;
+}
+
+.status-cell.approved-status small {
+    font-size: 0.85em;
+    color: #666;
+}
+
+.processed-label {
+    color: #666;
+    font-style: italic;
+}
